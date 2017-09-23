@@ -1,3 +1,15 @@
+import time
+import urllib
+
+import bs4
+import requests
+
+
+start_url = "https://en.wikipedia.org/wiki/Special:Random"
+target_url = "https://en.wikipedia.org/wiki/Philosophy"
+
+
+
 def find_first_link(url):
     response = requests.get(url)
     html = response.text
@@ -43,3 +55,18 @@ def continue_crawl(search_history, target_url, max_steps=25):
         return False
     else:
         return True
+        
+        
+article_chain = [start_url]
+
+while continue_crawl(article_chain, target_url):
+    print(article_chain[-1])
+
+    first_link = find_first_link(article_chain[-1])
+    if not first_link:
+        print("We've arrived at an article with no links, aborting search!")
+        break
+
+    article_chain.append(first_link)
+
+    time.sleep(2) # Slow things down so as to not hammer Wikipedia's servers
